@@ -1,0 +1,77 @@
+name: Postman API Tests & Governance
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  api-tests:
+    name: Run API Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start API server
+        run: |
+          npm start &
+          sleep 3
+        env:
+          PORT: 3000
+          API_KEY: grubhub-demo-key-2026
+
+      - name: Verify API health
+        run: |
+          curl -sf http://localhost:3000/api/v1/health
+          echo "API is healthy"
+
+      - name: Install Postman CLI
+        run: |
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+
+      - name: Run Postman collection tests
+        if: env.POSTMAN_API_KEY != ''
+        run: |
+          postman collection run "$COLLECTION_ID" \
+            --environment "$ENVIRONMENT_ID" \
+            --bail
+        env:
+          POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+          COLLECTION_ID: ${{ vars.POSTMAN_COLLECTION_ID }}
+          ENVIRONMENT_ID: ${{ vars.POSTMAN_ENVIRONMENT_ID }}
+
+  governance:
+    name: API Governance Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Postman CLI
+        run: |
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+
+      - name: Lint OpenAPI spec
+        if: env.POSTMAN_API_KEY != ''
+        run: |
+          postman api lint --api-definition spec/grubhub-partner-api.yaml
+        env:
+          POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+
+      - name: Validate OpenAPI spec structure
+        run: |
+          npx @apidevtools/swagger-cli validate spec/grubhub-partner-api.yaml
+          echo "OpenAPI spec is valid"
