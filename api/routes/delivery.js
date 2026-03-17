@@ -25,6 +25,14 @@ router.get('/:orderId/tracking', (req, res) => {
 });
 
 router.put('/:orderId/assign', (req, res) => {
+  const { driverName, driverPhone } = req.body;
+  if (!driverName || !driverPhone) {
+    return res.status(400).json({
+      error: 'Bad Request',
+      message: 'Fields driverName and driverPhone are required'
+    });
+  }
+
   const order = db.orders.find(o => o.id === req.params.orderId);
   if (!order) {
     return res.status(404).json({ error: 'Not Found', message: `Order ${req.params.orderId} not found` });
@@ -33,14 +41,6 @@ router.put('/:orderId/assign', (req, res) => {
   const existing = db.deliveries.find(d => d.orderId === req.params.orderId);
   if (existing) {
     return res.status(409).json({ error: 'Conflict', message: `Order ${req.params.orderId} already has a driver assigned` });
-  }
-
-  const { driverName, driverPhone } = req.body;
-  if (!driverName || !driverPhone) {
-    return res.status(400).json({
-      error: 'Bad Request',
-      message: 'Fields driverName and driverPhone are required'
-    });
   }
 
   const delivery = {
