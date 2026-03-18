@@ -181,9 +181,15 @@ async function main() {
   const existingSpec = (existingSpecs.body.specs || []).find(s => s.name === SPEC_NAME);
   if (existingSpec) {
     specId = existingSpec.id;
-    console.log(`   Spec exists (${specId}), updating...`);
-    const upd = await api('PUT', `/specs/${specId}`, { files: [{ path: 'grubhub-partner-api.yaml', content: specContent }] });
-    console.log(`   Update status: ${upd.status}`);
+    console.log(`   Spec exists (${specId}), deleting and recreating for clean state...`);
+    await api('DELETE', `/specs/${specId}`);
+    const create = await api('POST', `/specs?workspaceId=${WORKSPACE_ID}`, {
+      name: SPEC_NAME,
+      type: 'OPENAPI:3.0',
+      files: [{ path: 'grubhub-partner-api.yaml', content: specContent }]
+    });
+    specId = create.body.id;
+    console.log(`   Recreated spec: ${specId} (status: ${create.status})`);
   } else {
     const create = await api('POST', `/specs?workspaceId=${WORKSPACE_ID}`, {
       name: SPEC_NAME,
