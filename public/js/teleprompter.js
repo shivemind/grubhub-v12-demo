@@ -6,9 +6,9 @@ const SCRIPT_SECTIONS = [
       { type: 'line', text: 'Thanks everyone for taking the time today.' },
       { type: 'line', text: 'What I want to do is walk you through how Postman v12 changes the way enterprises manage APIs across their entire organization.' },
       { type: 'quote', text: 'Postman v12 evolves Postman from an API client into a full API platform.' },
-      { type: 'line', text: 'For years, teams have used Postman primarily to test APIs. But as organizations scale, APIs become infrastructure. They power applications, integrations, data systems, and now increasingly AI agents.' },
-      { type: 'line', text: 'So Postman v12 introduces a new architectural layer to support that scale.' },
-      { type: 'quote', text: 'Postman v12 introduces a management plane and a distribution plane on top of the traditional API workflow.' },
+      { type: 'line', text: 'Historically, teams have used Postman primarily to test APIs. But as organizations scale, APIs become infrastructure. They power applications, integrations, data systems, and now increasingly AI agents.' },
+      { type: 'line', text: 'So v12 introduces a new architectural layer to support that scale.' },
+      { type: 'quote', text: 'v12 introduces a management plane and a distribution plane on top of the traditional API workflow.' },
       { type: 'line', text: 'The traditional workflow \u2014 designing, testing, and debugging APIs \u2014 still exists.' },
       { type: 'line', text: 'But now we add two additional layers.' },
       { type: 'line', text: 'The management plane, which gives platform teams visibility and governance across the entire API estate.' },
@@ -19,7 +19,7 @@ const SCRIPT_SECTIONS = [
     id: 'catalog',
     title: 'API Catalog',
     lines: [
-      { type: 'line', text: "Let\u2019s start with the management plane, and specifically the API Catalog." },
+      { type: 'line', text: 'Let\u2019s start with the management plane, and specifically the API Catalog.' },
       { type: 'quote', text: 'The API Catalog provides a single pane of glass across your entire API landscape.' },
       { type: 'line', text: 'Instead of APIs being scattered across repositories, internal portals, and developer laptops, the catalog aggregates them into one unified view.' },
       { type: 'line', text: 'It pulls together OpenAPI specifications, collections, test results, monitoring data, and ownership metadata.' },
@@ -27,7 +27,7 @@ const SCRIPT_SECTIONS = [
       { type: 'line', text: '\u2022 Which APIs have complete specifications?' },
       { type: 'line', text: '\u2022 Which APIs are failing tests?' },
       { type: 'line', text: '\u2022 Which APIs are violating governance policies?' },
-      { type: 'line', text: "That\u2019s why we often describe the catalog as providing cross ecosystem intelligence across the entire API platform." },
+      { type: 'line', text: 'That\u2019s why we often describe the catalog as providing cross ecosystem intelligence across the entire API platform.' },
       { type: 'quote', text: 'Postman v12 lets platform teams see which APIs are healthy, failing, or violating governance rules.' }
     ]
   },
@@ -35,11 +35,11 @@ const SCRIPT_SECTIONS = [
     id: 'governance',
     title: 'API Governance',
     lines: [
-      { type: 'line', text: 'Now visibility is only useful if you can also enforce standards. That brings us to API governance.' },
+      { type: 'line', text: 'Visibility is only useful if you can also enforce standards. That brings us to API governance.' },
       { type: 'line', text: 'Modern organizations often have hundreds of engineers building APIs, and maintaining consistency across those teams can be extremely difficult.' },
       { type: 'quote', text: 'Postman v12 enables API governance by enforcing rules directly against OpenAPI specifications.' },
       { type: 'line', text: 'These rules can enforce standards like naming conventions, security requirements, versioning formats, and documentation completeness.' },
-      { type: 'line', text: "And importantly, those rules don\u2019t just exist inside the platform. They can be automated as part of the development lifecycle." },
+      { type: 'line', text: 'And importantly, those rules don\u2019t just exist inside the platform. They can be automated as part of the development lifecycle.' },
       { type: 'quote', text: 'Governance rules allow teams to automatically enforce API standards before code reaches production.' },
       { type: 'quote', text: 'Postman v12 can lint API specifications directly inside CI/CD pipelines.' },
       { type: 'line', text: 'That means developers get feedback early, and platform teams maintain consistency without slowing down development.' }
@@ -49,7 +49,7 @@ const SCRIPT_SECTIONS = [
     id: 'distribution',
     title: 'Private API Network',
     lines: [
-      { type: 'line', text: "Next, let\u2019s talk about the distribution plane, which is where APIs become reusable organizational assets." },
+      { type: 'line', text: 'Next, let\u2019s talk about the distribution plane, which is where APIs become reusable organizational assets.' },
       { type: 'line', text: 'This is powered by the Private API Network.' },
       { type: 'quote', text: 'The Private API Network acts as an internal developer portal for discovering APIs.' },
       { type: 'line', text: 'When teams publish APIs to the network, other teams can easily discover them, understand how they work, and start integrating immediately.' },
@@ -63,7 +63,7 @@ const SCRIPT_SECTIONS = [
     id: 'git',
     title: 'Git-Native Workflows',
     lines: [
-      { type: 'line', text: "Now let\u2019s talk about one of the biggest changes under the hood in Postman v12, which is Git-native workflows." },
+      { type: 'line', text: 'Now let\u2019s talk about one of the biggest changes under the hood in v12, which is Git-native workflows.' },
       { type: 'line', text: 'Historically, Postman collections were stored primarily as JSON inside the platform. That worked well for individual teams, but it didn\u2019t align well with enterprise development workflows.' },
       { type: 'quote', text: 'Postman v12 introduces native Git workflows so API assets can live alongside source code.' },
       { type: 'quote', text: 'Collections and API specifications can now be stored directly in Git and synchronized with Postman.' },
@@ -96,10 +96,14 @@ const SCRIPT_SECTIONS = [
     id: 'ai',
     title: 'AI & Agent Mode',
     lines: [
-      { type: 'line', text: "Finally, let\u2019s talk about AI and automation." },
+      { type: 'line', text: 'Finally, let\u2019s talk about AI and automation.' },
       { type: 'line', text: 'Postman v12 introduces Agent Mode, which brings AI directly into the API lifecycle.' },
       { type: 'quote', text: 'Agent Mode brings AI directly into the API workflow to generate tests, documentation, and debugging suggestions.' },
       { type: 'line', text: 'Developers can ask the agent to generate test suites, explain API responses, or suggest improvements to documentation.' },
+      { type: 'line', text: 'But what\u2019s really powerful is that this isn\u2019t just for developers anymore.' },
+      { type: 'quote', text: 'Now non-technical users can leverage Postman to get information about APIs and even solve problems \u2014 without writing a single line of code.' },
+      { type: 'line', text: 'Product managers, QA teams, support engineers \u2014 anyone can interact with APIs through natural language and get meaningful results.' },
+      { type: 'line', text: 'This opens up API access across the entire organization, not just engineering.' },
       { type: 'line', text: 'For platform teams, this dramatically reduces the effort required to maintain comprehensive API quality and documentation.' }
     ]
   },
@@ -109,7 +113,7 @@ const SCRIPT_SECTIONS = [
     lines: [
       { type: 'line', text: 'So when we step back and look at the full picture, the shift is pretty significant.' },
       { type: 'line', text: 'Postman v12 is no longer just a tool developers use to send requests.' },
-      { type: 'line', text: "It\u2019s an enterprise API platform that provides visibility, governance, discovery, automation, and AI assistance across the entire API lifecycle." },
+      { type: 'line', text: 'It\u2019s an enterprise API platform that provides visibility, governance, discovery, automation, and AI assistance across the entire API lifecycle.' },
       { type: 'quote', text: 'Enable developers to build and test APIs faster. Enable teams to collaborate around shared API workflows. And enable organizations to manage APIs and services at scale with visibility, governance, and automation.' }
     ]
   }

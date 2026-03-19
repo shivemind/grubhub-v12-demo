@@ -1,5 +1,158 @@
+function initSlideBG() {
+  const canvas = document.getElementById('slideBgCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let w, h, particles, gridPulse = 0, time = 0;
+
+  const ORANGE = { r: 255, g: 85, b: 1 };
+  const GREEN  = { r: 0,  g: 165, b: 80 };
+  const WHITE  = { r: 200, g: 200, b: 220 };
+
+  function resize() {
+    w = canvas.width  = canvas.parentElement.offsetWidth;
+    h = canvas.height = canvas.parentElement.offsetHeight;
+    initParticles();
+  }
+
+  function initParticles() {
+    particles = [];
+    const count = Math.floor((w * h) / 6000);
+    for (let i = 0; i < count; i++) {
+      const palette = [ORANGE, GREEN, WHITE][Math.floor(Math.random() * 3)];
+      particles.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r: Math.random() * 2 + 0.5,
+        color: palette,
+        alpha: Math.random() * 0.5 + 0.15,
+        pulse: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  function drawGrid() {
+    const spacing = 60;
+    const glow = 0.03 + Math.sin(gridPulse) * 0.015;
+    ctx.strokeStyle = `rgba(255, 85, 1, ${glow})`;
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    for (let x = 0; x < w; x += spacing) {
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, h);
+    }
+    for (let y = 0; y < h; y += spacing) {
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+    }
+    ctx.stroke();
+  }
+
+  function drawOrbs() {
+    const orbs = [
+      { x: w * 0.15, y: h * 0.35, radius: h * 0.35, color: ORANGE, alpha: 0.06 },
+      { x: w * 0.85, y: h * 0.65, radius: h * 0.30, color: GREEN,  alpha: 0.04 },
+      { x: w * 0.5,  y: h * 0.2,  radius: h * 0.25, color: ORANGE, alpha: 0.03 }
+    ];
+    orbs.forEach((o, i) => {
+      const drift = Math.sin(time * 0.3 + i * 2) * 30;
+      const grad = ctx.createRadialGradient(
+        o.x + drift, o.y + drift * 0.5, 0,
+        o.x + drift, o.y + drift * 0.5, o.radius
+      );
+      const a = o.alpha + Math.sin(time * 0.5 + i) * 0.015;
+      grad.addColorStop(0, `rgba(${o.color.r},${o.color.g},${o.color.b},${a})`);
+      grad.addColorStop(1, 'transparent');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+    });
+  }
+
+  function drawParticles() {
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0) p.x = w;
+      if (p.x > w) p.x = 0;
+      if (p.y < 0) p.y = h;
+      if (p.y > h) p.y = 0;
+
+      p.pulse += 0.02;
+      const a = p.alpha * (0.6 + Math.sin(p.pulse) * 0.4);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${p.color.r},${p.color.g},${p.color.b},${a})`;
+      ctx.fill();
+    });
+  }
+
+  function drawConnections() {
+    const maxDist = 120;
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < maxDist) {
+          const alpha = (1 - dist / maxDist) * 0.08;
+          ctx.strokeStyle = `rgba(255, 85, 1, ${alpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function drawScanLine() {
+    const yPos = (time * 40) % (h + 60) - 30;
+    const grad = ctx.createLinearGradient(0, yPos - 30, 0, yPos + 30);
+    grad.addColorStop(0, 'transparent');
+    grad.addColorStop(0.5, 'rgba(255, 85, 1, 0.03)');
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, yPos - 30, w, 60);
+  }
+
+  function drawVignette() {
+    const grad = ctx.createRadialGradient(w / 2, h / 2, h * 0.25, w / 2, h / 2, h * 0.9);
+    grad.addColorStop(0, 'transparent');
+    grad.addColorStop(1, 'rgba(15, 15, 26, 0.6)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+  }
+
+  function frame() {
+    time += 0.016;
+    gridPulse += 0.015;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#0f0f1a';
+    ctx.fillRect(0, 0, w, h);
+
+    drawGrid();
+    drawOrbs();
+    drawScanLine();
+    drawParticles();
+    drawConnections();
+    drawVignette();
+
+    requestAnimationFrame(frame);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  frame();
+}
+
 function initSlides() {
   const container = document.getElementById('slidesContainer');
+
+  const canvasEl = document.createElement('canvas');
+  canvasEl.id = 'slideBgCanvas';
+  container.appendChild(canvasEl);
 
   const slides = [
     {
@@ -12,13 +165,13 @@ function initSlides() {
       `,
       visual: `
         <div style="display:flex;gap:16px;justify-content:center;margin-top:32px;">
-          <div style="padding:16px 28px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);text-align:center;">
+          <div style="padding:16px 28px;background:rgba(34,34,58,0.8);border:1px solid var(--border);border-radius:var(--radius-lg);text-align:center;backdrop-filter:blur(8px);">
             <div style="font-size:2rem;margin-bottom:8px;">&#x1f4e6;</div>
             <div style="font-size:0.85rem;font-weight:600;">API Client</div>
             <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px;">Testing &amp; Debugging</div>
           </div>
           <div style="display:flex;align-items:center;font-size:2rem;color:var(--gh-red);">&rarr;</div>
-          <div style="padding:16px 28px;background:linear-gradient(135deg,rgba(246,52,64,0.1),rgba(0,165,80,0.1));border:1px solid var(--gh-red);border-radius:var(--radius-lg);text-align:center;">
+          <div style="padding:16px 28px;background:linear-gradient(135deg,rgba(255,85,1,0.15),rgba(0,165,80,0.1));border:1px solid var(--gh-red);border-radius:var(--radius-lg);text-align:center;backdrop-filter:blur(8px);">
             <div style="font-size:2rem;margin-bottom:8px;">&#x1f3d7;&#xfe0f;</div>
             <div style="font-size:0.85rem;font-weight:600;color:var(--gh-red);">API Platform</div>
             <div style="font-size:0.7rem;color:var(--text-secondary);margin-top:4px;">Visibility \u00b7 Governance \u00b7 Distribution</div>
@@ -86,7 +239,6 @@ function initSlides() {
     const el = document.createElement('div');
     el.className = `slide${i === 0 ? ' active' : ''}`;
     el.innerHTML = `
-      <div class="slide-bg"></div>
       <div class="slide-content">
         <div class="slide-eyebrow">${slide.eyebrow}</div>
         <div class="slide-title">${slide.title}</div>
@@ -121,4 +273,6 @@ function initSlides() {
     if (e.key === 'ArrowLeft') goTo(current - 1);
     if (e.key === 'ArrowRight') goTo(current + 1);
   });
+
+  initSlideBG();
 }

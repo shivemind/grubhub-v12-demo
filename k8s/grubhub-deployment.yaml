@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grubhub-partner-api
+  namespace: atlas-production
+  labels:
+    app: grubhub-partner-api
+    team: grubhub
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: grubhub-partner-api
+  template:
+    metadata:
+      labels:
+        app: grubhub-partner-api
+        team: grubhub
+    spec:
+      initContainers:
+        - name: clone-repo
+          image: alpine/git:latest
+          command:
+            - sh
+            - -c
+            - |
+              git clone --depth 1 https://github.com/shivemind/grubhub-v12-demo.git /app
+          volumeMounts:
+            - name: app-code
+              mountPath: /app
+      containers:
+        - name: grubhub-partner-api
+          image: node:20-slim
+          command:
+            - sh
+            - -c
+            - |
+              cd /app && npm install --production && node server.js
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: PORT
+              value: "3000"
+          volumeMounts:
+            - name: app-code
+              mountPath: /app
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 3000
+            initialDelaySeconds: 20
+            periodSeconds: 15
+      volumes:
+        - name: app-code
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grubhub-partner-api
+  namespace: atlas-production
+  labels:
+    app: grubhub-partner-api
+    team: grubhub
+spec:
+  type: ClusterIP
+  selector:
+    app: grubhub-partner-api
+  ports:
+    - port: 80
+      targetPort: 3000
+      protocol: TCP
